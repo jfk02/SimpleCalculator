@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="sk.javakurz.swing.calculator.MyCalculator">
+  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="GridLayoutManager" row-count="7" column-count="4" same-size-horizontally="true" same-size-vertically="false" hgap="0" vgap="0">
+    <margin top="10" left="10" bottom="10" right="10"/>
+    <constraints>
+      <xy x="20" y="20" width="500" height="500"/>
+    </constraints>
+    <properties>
+      <minimumSize width="350" height="450"/>
+      <opaque value="false"/>
+      <preferredSize width="350" height="450"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="5a743" class="javax.swing.JTextField" binding="display">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-1"/>
+          <editable value="false"/>
+          <focusable value="false"/>
+          <font name="Arial Unicode MS" size="28" style="0"/>
+          <horizontalAlignment value="4"/>
+        </properties>
+      </component>
+      <component id="56145" class="javax.swing.JButton" binding="equalButton">
+        <constraints>
+          <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-10172316"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="="/>
+        </properties>
+      </component>
+      <component id="f1b6d" class="javax.swing.JButton" binding="a0Button" default-binding="true">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="0"/>
+        </properties>
+      </component>
+      <component id="72d96" class="javax.swing.JButton" binding="a3Button" default-binding="true">
+        <constraints>
+          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="3"/>
+        </properties>
+      </component>
+      <component id="b2a27" class="javax.swing.JButton" binding="a2Button" default-binding="true">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="2"/>
+        </properties>
+      </component>
+      <component id="5f6c1" class="javax.swing.JButton" binding="a1Button" default-binding="true">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="1"/>
+        </properties>
+      </component>
+      <component id="26dc3" class="javax.swing.JButton" binding="a5Button" default-binding="true">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="5"/>
+        </properties>
+      </component>
+      <component id="fcb78" class="javax.swing.JButton" binding="a6Button" default-binding="true">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="6"/>
+        </properties>
+      </component>
+      <component id="735f7" class="javax.swing.JButton" binding="a4Button">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="4"/>
+        </properties>
+      </component>
+      <component id="83a0e" class="javax.swing.JButton" binding="a7Button" default-binding="true">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="7"/>
+        </properties>
+      </component>
+      <component id="84605" class="javax.swing.JButton" binding="a8Button" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="8"/>
+        </properties>
+      </component>
+      <component id="a16f1" class="javax.swing.JButton" binding="a9Button" default-binding="true">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28" style="1"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="9"/>
+        </properties>
+      </component>
+      <component id="6316a" class="javax.swing.JButton" binding="periodButton">
+        <constraints>
+          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="."/>
+        </properties>
+      </component>
+      <component id="9a3d1" class="javax.swing.JButton" binding="cButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <foreground color="-4054231"/>
+          <hideActionText value="false"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="AC"/>
+        </properties>
+      </component>
+      <component id="499c3" class="javax.swing.JButton" binding="backspaceButton">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="←"/>
+        </properties>
+      </component>
+      <component id="ce28d" class="javax.swing.JButton" binding="plusMinusButton">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="±"/>
+        </properties>
+      </component>
+      <component id="e8751" class="javax.swing.JButton" binding="percentageButton">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <autoscrolls value="true"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <text value="%"/>
+        </properties>
+      </component>
+      <component id="be45" class="javax.swing.JButton" binding="divideButton">
+        <constraints>
+          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3684409"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="÷"/>
+        </properties>
+      </component>
+      <component id="8b2f0" class="javax.swing.JButton" binding="multiplicationButton">
+        <constraints>
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3684409"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="x"/>
+        </properties>
+      </component>
+      <component id="6f5ea" class="javax.swing.JButton" binding="minusButton">
+        <constraints>
+          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3684409"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="-"/>
+        </properties>
+      </component>
+      <component id="151a0" class="javax.swing.JButton" binding="plusButton">
+        <constraints>
+          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3684409"/>
+          <borderPainted value="true"/>
+          <focusable value="false"/>
+          <font name="Droid Sans Mono" size="28"/>
+          <opaque value="false"/>
+          <rolloverEnabled value="true"/>
+          <text value="+"/>
+        </properties>
+      </component>
+      <hspacer id="8fb62">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="10"/>
+          </grid>
+        </constraints>
+      </hspacer>
+    </children>
+  </grid>
+</form>
