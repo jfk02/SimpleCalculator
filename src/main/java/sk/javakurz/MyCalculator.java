@@ -1,4 +1,4 @@
-package sk.javakurz.swing.calculator;
+package sk.javakurz;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

@@ -1,4 +1,4 @@
-package sk.javakurz.swing.calculator;
+package sk.javakurz;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

@@ -1,4 +1,4 @@
-package sk.javakurz.swing.calculator;
+package sk.javakurz;
 
 public interface CalculatorService {
     String doNumbersAction(String pressedNumber);
