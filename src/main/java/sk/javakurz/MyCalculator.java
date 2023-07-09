@@ -1,7 +1,11 @@
 package sk.javakurz;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
+import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 public class MyCalculator {
 
@@ -102,4 +106,5 @@ public class MyCalculator {
 
         display.setText("0");
     }
+
 }
