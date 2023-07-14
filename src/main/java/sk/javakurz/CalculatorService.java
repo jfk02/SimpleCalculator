@@ -1,9 +1,9 @@
 package sk.javakurz;
 
 public interface CalculatorService {
-    String doNumbersAction(String pressedNumber);
+    String evaluateNumberInput(String pressedNumber);
 
-    String doOperatorsAction(String operator);
+    String evaluateOperatorInput(String operator);
 
     void allClear();
 
@@ -13,5 +13,9 @@ public interface CalculatorService {
 
     String addMinusSign();
 
-    String doBackspace();
+    String clearLastNumber();
+
+    String[] evaluateMemoryOperation(String memoryButton);
+
+    String calculateSquareRoot();
 }

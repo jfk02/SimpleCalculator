@@ -2,102 +2,122 @@ package sk.javakurz;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.Callable;
+
+import static sk.javakurz.Flag.ALL_FLAGS;
+
+enum Flag {
+    OPERATOR, RESULT;
+    public static final EnumSet<Flag> ALL_FLAGS = EnumSet.allOf(Flag.class);
+}
 
 public class CalculatorServiceImpl implements CalculatorService {
 
     public CalculatorServiceImpl() {
     }
 
-    private String displayCache = "0";
+//region Fields
+    private String inputRegister = "0";
     private final LinkedList<BigDecimal> operandsQueue = new LinkedList<>();
-    private String mathOperator = "";
-    private boolean hasResult = false;
+    private String operatorRegister = "";
+    private final EnumSet<Flag> statusRegister = EnumSet.noneOf(Flag.class);
+    private BigDecimal memoryRegister = BigDecimal.ZERO;
+
     private final BigDecimal hundredPercent = new BigDecimal("100");
     private final MathContext mathContext = new MathContext(10);
-    private final HashMap<String, Callable<BigDecimal>> mathEvaluators = new HashMap<>() {
-        {
-            put("+", () -> operandsQueue.removeFirst().add(operandsQueue.peekLast(), mathContext));
-            put("-", () -> operandsQueue.removeFirst().subtract(operandsQueue.peekLast(), mathContext));
-            put("x", () -> operandsQueue.removeFirst().multiply(operandsQueue.peekLast(), mathContext));
-            put("÷", () -> operandsQueue.removeFirst().divide(operandsQueue.peekLast(), mathContext));
-            put("+%", () -> {
+    private final Map<String, Callable<BigDecimal>> mathOperations = Map.of(
+            "+", () -> operandsQueue.removeFirst().add(operandsQueue.peekLast(), mathContext),
+            "−", () -> operandsQueue.removeFirst().subtract(operandsQueue.peekLast(), mathContext),
+            "×", () -> operandsQueue.removeFirst().multiply(operandsQueue.peekLast(), mathContext),
+            "÷", () -> operandsQueue.removeFirst().divide(operandsQueue.peekLast(), mathContext),
+            "+%", () -> {
                 var firstOperand = operandsQueue.removeFirst();
-                var secondOperand = operandsQueue.peekLast().divide(hundredPercent, mathContext)
-                        .multiply(firstOperand);
+                BigDecimal secondOperand = calculatePercentageOf(firstOperand, operandsQueue.peekLast());
                 return firstOperand.add(secondOperand, mathContext);
-            });
-            put("-%", () -> {
+            },
+            "−%", () -> {
                 var firstOperand = operandsQueue.removeFirst();
-                var secondOperand = operandsQueue.peekLast().divide(hundredPercent, mathContext)
-                        .multiply(firstOperand);
+                BigDecimal secondOperand = calculatePercentageOf(firstOperand, operandsQueue.peekLast());
                 return firstOperand.subtract(secondOperand, mathContext);
-            });
-            put("x%", () -> operandsQueue.removeFirst()
+            },
+            "×%", () -> operandsQueue.removeFirst()
                     .multiply(operandsQueue.peekLast(), mathContext)
-                    .divide(hundredPercent, mathContext));
-            put("÷%", () -> operandsQueue.removeFirst()
+                    .divide(hundredPercent, mathContext),
+            "÷%", () -> operandsQueue.removeFirst()
                     .divide(operandsQueue.peekLast(), mathContext)
-                    .multiply(hundredPercent, mathContext));
-        }
-    };
+                    .multiply(hundredPercent, mathContext)
+    );
+//endregion
 
+//region Public methods
     @Override
-    public String doNumbersAction(String pressedNumber) {
-        clearAfterResult();
-        displayCache += displayCache.length() < 15 ? pressedNumber : "";
-        displayCache = removeLeadingZero(displayCache);
-        return displayCache;
+    public String evaluateNumberInput(String pressedNumber) {
+        clearAfterResultOrOperator();
+        inputRegister += inputRegister.length() < 15 ? pressedNumber : "";
+        inputRegister = removeLeadingZero(inputRegister);
+        return inputRegister;
     }
 
     @Override
-    public String doOperatorsAction(String operator) {
-        String resultText = "0";
+    public String evaluateOperatorInput(String operator) {
+        String resultText = inputRegister;
 
-        if (!hasResult) {
-            operandsQueue.clear();
-            operandsQueue.add(stringToBigDecimal(displayCache));
-            displayCache = "0";
-        } else operandsQueue.removeFirst();
-
-        if (operandsQueue.size() == 2) resultText = calculate();
-
-        mathOperator = operator;
+        if (!statusRegister.contains(Flag.OPERATOR)) {
+            operandsQueue.add(stringToBigDecimal(inputRegister));
+            if (operandsQueue.size() > 2)
+                operandsQueue.removeFirst();
+            if (!statusRegister.contains(Flag.RESULT)) {
+                if (operandsQueue.size() == 2) {
+                    resultText = calculate();
+                    operandsQueue.add(stringToBigDecimal(inputRegister));
+                }
+            } else {
+                statusRegister.remove(Flag.RESULT);
+            }
+        }
+        statusRegister.add(Flag.OPERATOR);
+        operatorRegister = operator;
         return resultText;
     }
 
     @Override
     public void allClear() {
         operandsQueue.clear();
-        hasResult = false;
-        displayCache = "0";
+        statusRegister.clear();
+        inputRegister = "0";
     }
 
     @Override
     public String addPeriod() {
-        if (!hasResult) {
-            displayCache += !displayCache.contains(".") ? "." : "";
+        if (!statusRegister.contains(Flag.RESULT) && !statusRegister.contains(Flag.OPERATOR)) {
+            inputRegister += !inputRegister.contains(".") ? "." : "";
         } else {
-            clearAfterResult();
-            displayCache = "0.";
+            clearAfterResultOrOperator();
+            inputRegister = "0.";
         }
-        return displayCache;
+        return inputRegister;
     }
 
     @Override
     public String performCalculation(String pressedButton) {
-        String resultText = displayCache;
-        var secondOperand = stringToBigDecimal(displayCache);
+        String resultText = inputRegister;
+        var secondOperand = stringToBigDecimal(inputRegister);
         switch (operandsQueue.size()) {
             case 1 -> {
-                mathOperator += addPercentageOperator(pressedButton);
-                operandsQueue.add(secondOperand);
+                operatorRegister += addPercentageOperator(pressedButton);
+
+                if (statusRegister.contains(Flag.RESULT))
+                    operandsQueue.addFirst(secondOperand);
+                else
+                    operandsQueue.add(secondOperand);
+
                 resultText = calculate();
             }
             case 2 -> {
-                if (hasResult)
+                if (statusRegister.contains(Flag.RESULT))
                     operandsQueue.add(operandsQueue.removeFirst());
                 else {
                     operandsQueue.removeFirst();
@@ -111,47 +131,87 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     @Override
     public String addMinusSign() {
-        displayCache = displayCache.startsWith("-") ? displayCache.substring(1) : "-" + displayCache;
-        if (hasResult) {
+        inputRegister = inputRegister.startsWith("-") ? inputRegister.substring(1) : "-" + inputRegister;
+        if (statusRegister.contains(Flag.RESULT)) {
             operandsQueue.removeLast();
-            operandsQueue.add(stringToBigDecimal(displayCache));
+            operandsQueue.add(stringToBigDecimal(inputRegister));
         }
-        return displayCache;
+        return inputRegister;
     }
 
     @Override
-    public String doBackspace() {
-        if (!hasResult) {
-            displayCache = displayCache.substring(0, displayCache.length() - 1);
+    public String clearLastNumber() {
+        if (!statusRegister.contains(Flag.RESULT)) {
+            inputRegister = inputRegister.substring(0, inputRegister.length() - 1);
         }
-        return displayCache;
+        return inputRegister;
     }
 
-    private String calculate() {
-        hasResult = false;
-        String resultText = "0";
+    @Override
+    public String[] evaluateMemoryOperation(String memoryButton) {
+        String[] result = new String[]{inputRegister, "M"};
+        switch (memoryButton) {
+            case "MR" -> {
+                result[0] = memoryRegister.toString();
+                inputRegister = result[0];
+            }
+            case "M+" -> {
+                memoryRegister = memoryRegister.add(stringToBigDecimal(inputRegister));
+                if (memoryRegister.equals(BigDecimal.ZERO)) result[1] = "";
+            }
+            case "M−" -> {
+                memoryRegister = memoryRegister.subtract(stringToBigDecimal(inputRegister));
+                if (memoryRegister.equals(BigDecimal.ZERO)) result[1] = "";
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String calculateSquareRoot() {
+        String resultText;
         try {
-            BigDecimal result = mathEvaluators.get(mathOperator).call();
-            displayCache = result.toString();
-            operandsQueue.add(stringToBigDecimal(displayCache));
-            resultText = displayCache;
-            hasResult = true;
+            inputRegister = new BigDecimal(inputRegister).sqrt(mathContext).toString();
+            resultText = inputRegister;
+        } catch (ArithmeticException e) {
+            resultText = "Error";
+        }
+        return resultText;
+    }
+//endregion
+
+//region Private methods
+    private String calculate() {
+        String resultText;
+        statusRegister.clear();
+        try {
+            BigDecimal result = mathOperations.get(operatorRegister).call();
+            inputRegister = result.toString();
+            resultText = inputRegister;
+            statusRegister.add(Flag.RESULT);
         } catch (Exception e) {
-            displayCache = "0";
+            inputRegister = "0";
             resultText = "Error";
         }
         return resultText;
     }
 
-    private void clearAfterResult() {
-        if (hasResult) {
-            hasResult = false;
-            displayCache = "0";
+    private void clearAfterResultOrOperator() {
+        if (statusRegister.containsAll(ALL_FLAGS)) {
+            statusRegister.clear();
+            inputRegister = "";
+        } else if (statusRegister.contains(Flag.OPERATOR)) {
+            statusRegister.remove(Flag.OPERATOR);
+            inputRegister = "";
+        } else if (statusRegister.contains(Flag.RESULT)) {
+            operandsQueue.clear();
+            statusRegister.remove(Flag.RESULT);
+            inputRegister = "";
         }
     }
 
     private String addPercentageOperator(String button) {
-        return button.equals("%") && mathOperator.length() == 1 ? "%" : "";
+        return button.equals("%") && operatorRegister.length() == 1 ? "%" : "";
     }
 
     private String removeLeadingZero(String number) {
@@ -167,4 +227,13 @@ public class CalculatorServiceImpl implements CalculatorService {
         number = number == null ? "0" : number;
         return new BigDecimal(number);
     }
+
+    private BigDecimal calculatePercentageOf(BigDecimal firstOperand, BigDecimal secondOperand) {
+        var result = BigDecimal.ZERO;
+        if (secondOperand != null) {
+            result = secondOperand.divide(hundredPercent, mathContext).multiply(firstOperand, mathContext);
+        }
+        return result;
+    }
+//endregion
 }
