@@ -7,11 +7,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static sk.javakurz.Flag.ALL_FLAGS;
+import static sk.javakurz.Flag.OPERATIONS_FLAGS;
 
 enum Flag {
-    OPERATOR, RESULT;
-    public static final EnumSet<Flag> ALL_FLAGS = EnumSet.allOf(Flag.class);
+    OPERATOR, RESULT, MEMORY_RECALL;
+    public static final EnumSet<Flag> OPERATIONS_FLAGS = EnumSet.of(Flag.OPERATOR, Flag.RESULT);
 }
 
 public class CalculatorServiceImpl implements CalculatorService {
@@ -19,7 +19,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     public CalculatorServiceImpl() {
     }
 
-//region Fields
+    //region Fields
     private String inputRegister = "0";
     private final LinkedList<BigDecimal> operandsQueue = new LinkedList<>();
     private String operatorRegister = "";
@@ -52,10 +52,11 @@ public class CalculatorServiceImpl implements CalculatorService {
     );
 //endregion
 
-//region Public methods
+    //region Public methods
     @Override
     public String evaluateNumberInput(String pressedNumber) {
         clearAfterResultOrOperator();
+        statusRegister.remove(Flag.MEMORY_RECALL);
         inputRegister += inputRegister.length() < 15 ? pressedNumber : "";
         inputRegister = removeLeadingZero(inputRegister);
         return inputRegister;
@@ -64,6 +65,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     @Override
     public String evaluateOperatorInput(String operator) {
         String resultText = inputRegister;
+        statusRegister.remove(Flag.MEMORY_RECALL);
 
         if (!statusRegister.contains(Flag.OPERATOR)) {
             operandsQueue.add(stringToBigDecimal(inputRegister));
@@ -92,6 +94,7 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     @Override
     public String addPeriod() {
+        statusRegister.remove(Flag.MEMORY_RECALL);
         if (!statusRegister.contains(Flag.RESULT) && !statusRegister.contains(Flag.OPERATOR)) {
             inputRegister += !inputRegister.contains(".") ? "." : "";
         } else {
@@ -104,6 +107,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     @Override
     public String performCalculation(String pressedButton) {
         String resultText = inputRegister;
+        statusRegister.remove(Flag.MEMORY_RECALL);
         var secondOperand = stringToBigDecimal(inputRegister);
         switch (operandsQueue.size()) {
             case 1 -> {
@@ -131,6 +135,7 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     @Override
     public String addMinusSign() {
+        statusRegister.remove(Flag.MEMORY_RECALL);
         inputRegister = inputRegister.startsWith("-") ? inputRegister.substring(1) : "-" + inputRegister;
         if (statusRegister.contains(Flag.RESULT)) {
             operandsQueue.removeLast();
@@ -141,6 +146,7 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     @Override
     public String clearLastNumber() {
+        statusRegister.remove(Flag.MEMORY_RECALL);
         if (!statusRegister.contains(Flag.RESULT)) {
             inputRegister = inputRegister.substring(0, inputRegister.length() - 1);
         }
@@ -151,17 +157,34 @@ public class CalculatorServiceImpl implements CalculatorService {
     public String[] evaluateMemoryOperation(String memoryButton) {
         String[] result = new String[]{inputRegister, "M"};
         switch (memoryButton) {
-            case "MR" -> {
-                result[0] = memoryRegister.toString();
-                inputRegister = result[0];
+            case "MRC" -> {
+                if (statusRegister.contains(Flag.MEMORY_RECALL)) {
+                    memoryRegister = BigDecimal.ZERO;
+                } else {
+                    statusRegister.add(Flag.MEMORY_RECALL);
+                    result[0] = memoryRegister.toEngineeringString();
+                    inputRegister = result[0];
+                }
+                if (memoryRegister.stripTrailingZeros().equals(BigDecimal.ZERO)) {
+                    memoryRegister = BigDecimal.ZERO;
+                    result[1] = "";
+                }
             }
             case "M+" -> {
-                memoryRegister = memoryRegister.add(stringToBigDecimal(inputRegister));
-                if (memoryRegister.equals(BigDecimal.ZERO)) result[1] = "";
+                statusRegister.remove(Flag.MEMORY_RECALL);
+                memoryRegister = memoryRegister.add(stringToBigDecimal(inputRegister)).stripTrailingZeros();
+                if (memoryRegister.equals(BigDecimal.ZERO)) {
+                    memoryRegister = BigDecimal.ZERO;
+                    result[1] = "";
+                }
             }
             case "M−" -> {
-                memoryRegister = memoryRegister.subtract(stringToBigDecimal(inputRegister));
-                if (memoryRegister.equals(BigDecimal.ZERO)) result[1] = "";
+                statusRegister.remove(Flag.MEMORY_RECALL);
+                memoryRegister = memoryRegister.subtract(stringToBigDecimal(inputRegister)).stripTrailingZeros();
+                if (memoryRegister.equals(BigDecimal.ZERO)) {
+                    memoryRegister = BigDecimal.ZERO;
+                    result[1] = "";
+                }
             }
         }
         return result;
@@ -170,8 +193,11 @@ public class CalculatorServiceImpl implements CalculatorService {
     @Override
     public String calculateSquareRoot() {
         String resultText;
+        statusRegister.remove(Flag.MEMORY_RECALL);
         try {
-            inputRegister = new BigDecimal(inputRegister).sqrt(mathContext).toString();
+            inputRegister = new BigDecimal(inputRegister).sqrt(mathContext)
+                    .stripTrailingZeros()
+                    .toEngineeringString();
             resultText = inputRegister;
         } catch (ArithmeticException e) {
             resultText = "Error";
@@ -180,13 +206,13 @@ public class CalculatorServiceImpl implements CalculatorService {
     }
 //endregion
 
-//region Private methods
+    //region Private methods
     private String calculate() {
         String resultText;
         statusRegister.clear();
         try {
-            BigDecimal result = mathOperations.get(operatorRegister).call();
-            inputRegister = result.toString();
+            BigDecimal result = mathOperations.get(operatorRegister).call().stripTrailingZeros();
+            inputRegister = result.toEngineeringString();
             resultText = inputRegister;
             statusRegister.add(Flag.RESULT);
         } catch (Exception e) {
@@ -197,7 +223,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     }
 
     private void clearAfterResultOrOperator() {
-        if (statusRegister.containsAll(ALL_FLAGS)) {
+        if (statusRegister.containsAll(OPERATIONS_FLAGS)) {
             statusRegister.clear();
             inputRegister = "";
         } else if (statusRegister.contains(Flag.OPERATOR)) {
@@ -231,7 +257,9 @@ public class CalculatorServiceImpl implements CalculatorService {
     private BigDecimal calculatePercentageOf(BigDecimal firstOperand, BigDecimal secondOperand) {
         var result = BigDecimal.ZERO;
         if (secondOperand != null) {
-            result = secondOperand.divide(hundredPercent, mathContext).multiply(firstOperand, mathContext);
+            result = secondOperand.divide(hundredPercent, mathContext)
+                    .multiply(firstOperand, mathContext)
+                    .stripTrailingZeros();
         }
         return result;
     }

@@ -4,14 +4,16 @@ import org.javatuples.Pair;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import static sk.javakurz.CalculatorView.*;
 
 public class CalculatorView extends JPanel {
 
-//region Constants
+    //region Constants
     protected static final Font NUMBER_BUTTON_FONT = new Font("Arial", Font.PLAIN, 28);
     protected static final Font SMALL_BUTTON_FONT = new Font("Cambria", Font.PLAIN, 20);
     protected static final Font BUTTON_FONT = new Font("Cambria", Font.PLAIN, 26);
@@ -22,52 +24,40 @@ public class CalculatorView extends JPanel {
         createComponents();
     }
 
-//region Fields
+    //region Fields
     private Display display;
     CalculatorService calculatorService;
     private final GridBagConstraints constraints = new GridBagConstraints();
 
-    private final Pair<JButton, ActionListener>[][] calculatorBuutons = new Pair[][]{
-            new Pair[]{
-                    new Pair<>(new SmallButton("MR"), createMemoryListener()),
-                    new Pair<>(new SmallButton("M+"), createMemoryListener()),
-                    new Pair<>(new SmallButton("M−"), createMemoryListener()),
-                    new Pair<>(new SmallButton("√"), createRootListener())
-            },
-            new Pair[]{
-                    new Pair<>(new ClearButton(), createClearButtonListener()),
-                    new Pair<>(new CalculatorButton("←"), createBackspaceListener()),
-                    new Pair<>(new CalculatorButton("±"), createPlusMinusListener()),
-                    new Pair<>(new CalculatorButton("÷"), createOperatorsListener())
-            },
-            new Pair[]{
-                    new Pair<>(new NumberButton("7"), createNumbersListener()),
-                    new Pair<>(new NumberButton("8"), createNumbersListener()),
-                    new Pair<>(new NumberButton("9"), createNumbersListener()),
-                    new Pair<>(new CalculatorButton("×"), createOperatorsListener())
-            },
-            new Pair[]{
-                    new Pair<>(new NumberButton("4"), createNumbersListener()),
-                    new Pair<>(new NumberButton("5"), createNumbersListener()),
-                    new Pair<>(new NumberButton("6"), createNumbersListener()),
-                    new Pair<>(new CalculatorButton("−"), createOperatorsListener())
-            },
-            new Pair[]{
-                    new Pair<>(new NumberButton("1"), createNumbersListener()),
-                    new Pair<>(new NumberButton("2"), createNumbersListener()),
-                    new Pair<>(new NumberButton("3"), createNumbersListener()),
-                    new Pair<>(new CalculatorButton("+"), createOperatorsListener())
-            },
-            new Pair[]{
-                    new Pair<>(new CalculatorButton("%"), createPerformCalculationListener()),
-                    new Pair<>(new NumberButton("0"), createNumbersListener()),
-                    new Pair<>(new CalculatorButton("."), createPeriodButtonListener()),
-                    new Pair<>(new EqualButton(), createPerformCalculationListener())
-            }
-    };
+    private final List<Pair<JButton, ActionListener>> calculatorButtons = List.of(
+            new Pair<>(new SmallButton("MRC"), createMemoryListener()),
+            new Pair<>(new SmallButton("M+"), createMemoryListener()),
+            new Pair<>(new SmallButton("M−"), createMemoryListener()),
+            new Pair<>(new SmallButton("√"), createRootListener()),
+            new Pair<>(new ClearButton(), createClearButtonListener()),
+            new Pair<>(new CalculatorButton("←"), createBackspaceListener()),
+            new Pair<>(new CalculatorButton("±"), createPlusMinusListener()),
+            new Pair<>(new CalculatorButton("÷"), createOperatorsListener()),
+            new Pair<>(new NumberButton("7"), createNumbersListener()),
+            new Pair<>(new NumberButton("8"), createNumbersListener()),
+            new Pair<>(new NumberButton("9"), createNumbersListener()),
+            new Pair<>(new CalculatorButton("×"), createOperatorsListener()),
+            new Pair<>(new NumberButton("4"), createNumbersListener()),
+            new Pair<>(new NumberButton("5"), createNumbersListener()),
+            new Pair<>(new NumberButton("6"), createNumbersListener()),
+            new Pair<>(new CalculatorButton("−"), createOperatorsListener()),
+            new Pair<>(new NumberButton("1"), createNumbersListener()),
+            new Pair<>(new NumberButton("2"), createNumbersListener()),
+            new Pair<>(new NumberButton("3"), createNumbersListener()),
+            new Pair<>(new CalculatorButton("+"), createOperatorsListener()),
+            new Pair<>(new CalculatorButton("%"), createPerformCalculationListener()),
+            new Pair<>(new NumberButton("0"), createNumbersListener()),
+            new Pair<>(new CalculatorButton("."), createPeriodButtonListener()),
+            new Pair<>(new EqualButton(), createPerformCalculationListener())
+    );
 //endregion
 
-//region Private methods
+    //region Private methods
     private void createComponents() {
         setLayout(new GridBagLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -92,11 +82,12 @@ public class CalculatorView extends JPanel {
 
     private void addButtons() {
         for (int y = 0; y < 6; y++) {
-            constraints.weighty = y == 0 ? 0.4 : 0.5;
+            constraints.weighty = y == 0 ? 0.3 : 0.5;
             for (int x = 0; x < 4; x++) {
-                var button = calculatorBuutons[y][x].getValue0();
-                addComponent(button, x, y + 1);
-                button.addActionListener(calculatorBuutons[y][x].getValue1());
+                var button = calculatorButtons.get((y * 4) + x);
+                var component = button.getValue0();
+                addComponent(component, x, y + 1);
+                component.addActionListener(button.getValue1());
             }
         }
     }
@@ -110,7 +101,7 @@ public class CalculatorView extends JPanel {
     }
 //endregion
 
-//region ActionListeners
+    //region ActionListeners
     private ActionListener createNumbersListener() {
         return e -> display.setDisplayText(calculatorService.evaluateNumberInput(e.getActionCommand()));
     }
